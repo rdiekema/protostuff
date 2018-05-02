@@ -308,6 +308,17 @@ public final class ProtostuffIOUtil
     public static <T> List<T> parseListFrom(final InputStream in, final Schema<T> schema)
             throws IOException
     {
+        return parseListFrom(in, schema, null);
+    }
+
+    /**
+     * Parses the {@code messages} (delimited) from the {@link InputStream} using the given {@code schema}.
+     *
+     * @return the list containing the messages.
+     */
+    public static <T> List<T> parseListFrom(final InputStream in, final Schema<T> schema, final Integer sizeLimit)
+            throws IOException
+    {
         int size = in.read();
         if (size == -1)
             return Collections.emptyList();
@@ -317,6 +328,10 @@ public final class ProtostuffIOUtil
 
         final ArrayList<T> list = new ArrayList<T>(size);
         final CodedInput input = new CodedInput(in, true);
+        if(sizeLimit != null){
+            input.setSizeLimit(sizeLimit);
+        }
+
         for (int i = 0; i < size; i++)
         {
             final T message = schema.newMessage();
